@@ -1,0 +1,14 @@
+{
+  "GRIP": {
+    "myContoursReport": {
+      "open": true
+    },
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "mode": "Client"
+  },
+  "datatable": {
+    "open": true
+  }
+}
