@@ -129,7 +129,9 @@ public class DriveTrain extends SubsystemBase {
     return lMotor;
   }
 
-  public void periodic(){
+  // once every scheduler iteration (usually, once every 20 ms). 
+  // This method is typically used for telemetry and other periodic actions that do not interfere with whatever command is requiring the subsystem.
+  public void periodic() {
 	  //arcade is wired so when joystick is forward it goes forward and the joystick is left it turns left
 	  //possibly unused last year
 	  //so we don't know if this works
