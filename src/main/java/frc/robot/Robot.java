@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
-import frc.robot.commands.Intake.*;
 //import frc.robot.commands.Intake.shoot;
 //import java.lang.Math;
 //import frc.robot.OI; unused
@@ -32,9 +31,6 @@ public class Robot extends TimedRobot {
   public static DriveTrain Drive;// could be redundent , if we delete drivetrain get rid of this
   //public static Lift Elevator; // elevator for gripper
   public static Vision Cameras; // used for the vision class as needed
-  public static Intake Spintake;
-  public static Shooter Gun;
-  public static Lift Climb;
   //public static Barriers Gates;
   // public static Multi MultiSystem;   // contains shooter, intake, rotator
   //public static Shooter Launcher;
@@ -55,20 +51,20 @@ public class Robot extends TimedRobot {
     
     Drive = new DriveTrain();
     Cameras = new Vision();
-    Spintake = new Intake();
-    Gun = new Shooter();
     // Climb = new Lift();
     
     m_oi = new OI();
-    m_chooser = new SendableChooser<Command>();
-    m_chooser.setDefaultOption("auto1", new ParallelCommandGroup(
-      new dropShooter(), new scuffedCommand()
-    )
+    // may use again later
     
-    );
+    // m_chooser = new SendableChooser<Command>();
+    // m_chooser.setDefaultOption("auto1", new ParallelCommandGroup(
+    //   new dropShooter(), new scuffedCommand()
+    // )
+    
+    // );
     //m_chooser.addOption("breakStartLine", new breakStartLine());
     // m_chooser.addOption("auto2", new auto2());
-    SmartDashboard.putData("Auto mode", m_chooser);
+    // SmartDashboard.putData("Auto mode", m_chooser);
   }
 
   /**

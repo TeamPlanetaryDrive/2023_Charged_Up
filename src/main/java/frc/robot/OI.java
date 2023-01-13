@@ -8,10 +8,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.*;
-import frc.robot.commands.Intake.dropShooter;
-import frc.robot.commands.Intake.intakeCBT;
-import frc.robot.commands.Intake.intakeDTF;
-import frc.robot.commands.Intake.intakeDTFSlow;
 import frc.robot.commands.vision.*;
 
 
@@ -24,17 +20,19 @@ public class OI {
     private static final int LEFT_STICK_PRESS = 0, RIGHT_STICK_PRESS = 1;    
 
   public OI() {
-    RobotMap.aButton.whenPressed(new turnToGoal());    
+    // TODO: remap the buttons to things
+
+    // RobotMap.aButton.whenPressed(new turnToGoal());    
     // RobotMap.bButton.whenPressed(new testCommand());
-    RobotMap.xButton.whenPressed(new dropShooter());
-    //RobotMap.yButton.whenPressed(new climb()); 
+    // RobotMap.xButton.whenPressed(new dropShooter());
+    // RobotMap.yButton.whenPressed(new climb()); 
     // RobotMap.startButton.whenPressed(new setLift(true));
     // RobotMap.backButton.whenPressed(new setLift(false));
-    RobotMap.leftBumper.whenPressed(new SequentialCommandGroup(new intakeCBT(2), new intakeDTF(30)));
-    RobotMap.rightBumper.whenPressed(new intakeDTFSlow(25));
+    // RobotMap.leftBumper.whenPressed(new SequentialCommandGroup(new intakeCBT(2), new intakeDTF(30)));
+    // RobotMap.rightBumper.whenPressed(new intakeDTFSlow(25));
     
-    RobotMap.leftStickButton.whenHeld(new movement(LEFT_STICK_PRESS));
-    RobotMap.rightStickButton.whenHeld(new movement(RIGHT_STICK_PRESS));
+    // RobotMap.leftStickButton.whenHeld(new movement(LEFT_STICK_PRESS));
+    // RobotMap.rightStickButton.whenHeld(new movement(RIGHT_STICK_PRESS));
     
     /*
     Goals for Xbox Controller Button Pressing Mapping
