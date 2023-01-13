@@ -3,7 +3,6 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2023.1.1"
 }
 
-
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
@@ -46,11 +45,7 @@ wpi.java.debugJni = false
 // Set this to true to enable desktop support.
 def includeDesktopSupport = false
 
-repositories {
-        mavenCentral()
-        jcenter()
-        maven { url "https://jitpack.io" }
-}
+
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
@@ -58,7 +53,6 @@ dependencies {
     
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
-
     implementation 'org.apache.commons:commons-lang3:3.6'
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
