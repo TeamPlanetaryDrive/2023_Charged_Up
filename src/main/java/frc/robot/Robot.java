@@ -29,7 +29,7 @@ import frc.robot.commands.autonomous.*;
 public class Robot extends TimedRobot {
 
   public static DriveTrain Drive; // could be redundant , if we delete drivetrain get rid of this
-  public static Vision Cameras; // used for helping line up bot thru apriltags use 16h5
+  public static AprilTagVision Cameras; // used for helping line up bot thru apriltags use 16h5
   public static OI m_oi;
 
   public Command m_autonomousCommand;
@@ -45,7 +45,8 @@ public class Robot extends TimedRobot {
     RobotMap.init();
     
     Drive = new DriveTrain();
-    Cameras = new Vision();
+    Cameras = new AprilTagVision();
+    // Cameras = new Vision();
     m_oi = new OI();
     // may use again later
 
