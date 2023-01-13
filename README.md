@@ -1,3 +1,8 @@
 # 2023_Charged_Up
 
-my commits to the project
+## done
+rewrote build.gradle for 2023 
+clean up unused code
+
+## working on 
+apriltag implementation
