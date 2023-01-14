@@ -35,15 +35,15 @@ public class ArcadeMovement extends CommandBase {
 
         if(controller.getRightY() >= 0) {
             if(controller.getRightX() >= 0) {
-                Robot.Drive.arcadeDrive(thrustConstant[1], thrustConstant[2]);
-            } else {
-                Robot.Drive.arcadeDrive(-thrustConstant[1], thrustConstant[2]);
-            }
-        } else {
-            if(controller.getRightX() >= 0) {
                 Robot.Drive.arcadeDrive(thrustConstant[1], -thrustConstant[2]);
             } else {
                 Robot.Drive.arcadeDrive(-thrustConstant[1], -thrustConstant[2]);
+            }
+        } else {
+            if(controller.getRightX() >= 0) {
+                Robot.Drive.arcadeDrive(thrustConstant[1], thrustConstant[2]);
+            } else {
+                Robot.Drive.arcadeDrive(-thrustConstant[1], thrustConstant[2]);
             }
         }
     }
