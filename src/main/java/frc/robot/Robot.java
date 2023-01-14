@@ -29,7 +29,7 @@ import frc.robot.commands.autonomous.*;
  */
 public class Robot extends TimedRobot {
 
-  public static DriveTrain Drive;// could be redundent , if we delete drivetrain get rid of this
+  public static OldDriveTrain Drive;// could be redundent , if we delete drivetrain get rid of this
   //public static Lift Elevator; // elevator for gripper
   public static Vision Cameras; // used for the vision class as needed
   public static Intake Spintake;
@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     RobotMap.init();
     
-    Drive = new DriveTrain();
+    Drive = new OldDriveTrain();
     Cameras = new Vision();
     Spintake = new Intake();
     Gun = new Shooter();

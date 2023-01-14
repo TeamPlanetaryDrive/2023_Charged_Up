@@ -9,7 +9,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.Encoder;
 //import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -17,7 +16,7 @@ import frc.robot.RobotMap;
 //import frc.robot.commands.robotMovement;
 
 //use this for anything on th drivetrain like guiding electricty or something (likely redundent so delete if un needed)
-public class DriveTrain extends SubsystemBase {
+public class OldDriveTrain extends SubsystemBase {
   // Put methods for controlling this subsystem here. Call these from Commands.
 
   /*
@@ -34,13 +33,14 @@ public class DriveTrain extends SubsystemBase {
   static final double r2o2 = Math.sqrt(2)/2;
   double thrust = 0.75;
   public static final int ARCADE=-1,WILLIAM=0,BBALL=1,BURGERKING=2,JAEGER=3;
-  private double stationaryTolerance = 0.05;
+  // ARCADE is a method of driving where it uses 1 joystick
+  private double stationaryTolerance = 0.05; //unclear
   Victor lMotor, rMotor;
   public Encoder encoderL, encoderR;
   double yk,xk; // movement decay
   double k = 0.05;
 
-  public DriveTrain() {
+  public OldDriveTrain() {
     // calls the subsystem to let it know that it needs to be called as a subsystem
     super();
     lMotor = new Victor(RobotMap.LEFT_MOTOR_CHANNEL);
@@ -48,15 +48,15 @@ public class DriveTrain extends SubsystemBase {
     rMotor.setInverted(true);
     robotDrive = new DifferentialDrive(lMotor, rMotor);
     robotDrive.setSafetyEnabled(false); //??????????????
-    //encoderL = new Encoder(RobotMap.DRIVETRAIN_ENCODER_CHANNEL_L_A, RobotMap.DRIVETRAIN_ENCODER_CHANNEL_L_B);
-    //encoderR = new Encoder(RobotMap.DRIVETRAIN_ENCODER_CHANNEL_R_A, RobotMap.DRIVETRAIN_ENCODER_CHANNEL_R_B, true);
-    //encoderL.setDistancePerPulse(1./256.); //need to do tests to see how far it moves in 256 pulses, depends on speed tho
-    //encoderR.setDistancePerPulse(1./256.);
+    encoderL = new Encoder(RobotMap.DRIVETRAIN_ENCODER_CHANNEL_L_A, RobotMap.DRIVETRAIN_ENCODER_CHANNEL_L_B);
+    encoderR = new Encoder(RobotMap.DRIVETRAIN_ENCODER_CHANNEL_R_A, RobotMap.DRIVETRAIN_ENCODER_CHANNEL_R_B, true);
+    encoderL.setDistancePerPulse(1./256.); //need to do tests to see how far it moves in 256 pulses, depends on speed tho
+    encoderR.setDistancePerPulse(1./256.);
     //use encoders this year --> gives input from the motor, can help control speed
-    // setDefaultCommand(new robotMovement());
+    setDefaultCommand(new robotMovement());
   }
 
-  public double[] getDriveSpeed(int mode) {
+  public double[] switchMode(int mode) {
     double yaxis = RobotMap.XController.getLeftY();
     double xaxis = RobotMap.XController.getLeftX();
     double dpadAngle = RobotMap.XController.getPOV()*(Math.PI/180);
@@ -121,13 +121,13 @@ public class DriveTrain extends SubsystemBase {
     return robotDrive;
   }
 
-  public MotorController getSPRight() {
-    return rMotor;
-  }
+  //public MotorController getSPRight() {
+    //return rMotor;
+  //}
 
-  public MotorController getSPLeft() {
-    return lMotor;
-  }
+  //public MotorController getSPLeft() {
+   // return lMotor;
+  //}
 
   public void periodic(){
 	  //arcade is wired so when joystick is forward it goes forward and the joystick is left it turns left
