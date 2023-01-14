@@ -25,7 +25,7 @@ public class ArcadeMovement extends CommandBase {
     @Override
     public void execute() {
         
-        if (thrustConstant[0] >= 0) {
+        if (thrustConstant[0] > 0) {
             thrustConstant[1] = thrustConstant[0];
             thrustConstant[2] = thrustConstant[0];
         } else if (thrustConstant[0] == 0) {
@@ -35,15 +35,16 @@ public class ArcadeMovement extends CommandBase {
 
         if(controller.getRightY() >= 0) {
             if(controller.getRightX() >= 0) {
-                Robot.Drive.arcadeDrive(thrustConstant[1], -thrustConstant[2]);
+                Robot.Drive.arcadeDrive(thrustConstant[1], (thrustConstant[0] > 0 ? -1 : 1) * thrustConstant[2]);
+
             } else {
-                Robot.Drive.arcadeDrive(-thrustConstant[1], -thrustConstant[2]);
+                Robot.Drive.arcadeDrive(-thrustConstant[1], (thrustConstant[0] > 0 ? -1 : 1) * thrustConstant[2]);
             }
         } else {
             if(controller.getRightX() >= 0) {
                 Robot.Drive.arcadeDrive(thrustConstant[1], thrustConstant[2]);
             } else {
-                Robot.Drive.arcadeDrive(-thrustConstant[1], thrustConstant[2]);
+                Robot.Drive.arcadeDrive(-thrustConstant[1],thrustConstant[2]);
             }
         }
     }
