@@ -18,6 +18,7 @@ public class ArcadeMovement extends CommandBase {
         controller = RobotMap.XController;
     }
 
+    @Override
     public void initialize() {
 
     }
@@ -54,7 +55,8 @@ public class ArcadeMovement extends CommandBase {
         return super.isFinished();
     }
 
-    public void end() {
+    @Override
+    public void end(boolean interrupted) {
         Robot.Drive.arcadeDrive(0, 0);
     }
 
