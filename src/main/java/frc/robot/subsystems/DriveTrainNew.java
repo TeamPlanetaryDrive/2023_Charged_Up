@@ -17,12 +17,16 @@ public class DriveTrainNew extends SubsystemBase {
     
     public DriveTrainNew() {
         super();
+
         lMotor = new Victor(RobotMap.LEFT_MOTOR_CHANNEL);
         rMotor = new Victor(RobotMap.RIGHT_MOTOR_CHANNEL);
         rMotor.setInverted(true);
+
         robotDrive = new DifferentialDrive(lMotor, rMotor);
-        robotDrive.setSafetyEnabled(false);
+        
         encoderL = new Encoder(RobotMap.DRIVETRAIN_ENCODER_CHANNEL_L_A, RobotMap.DRIVETRAIN_ENCODER_CHANNEL_L_B);
         encoderR = new Encoder(RobotMap.DRIVETRAIN_ENCODER_CHANNEL_R_A, RobotMap.DRIVETRAIN_ENCODER_CHANNEL_R_B, true);
-      }
+        encoderL.setDistancePerPulse(4./256.); 
+        encoderR.setDistancePerPulse(4./256.);
+    }
 }
