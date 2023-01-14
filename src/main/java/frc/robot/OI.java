@@ -8,8 +8,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.*;
-import frc.robot.commands.vision.*;
-
 
 /**
  * This class is what binds the controls on the physical operator
