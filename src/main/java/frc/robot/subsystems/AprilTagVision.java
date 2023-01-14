@@ -135,8 +135,6 @@ public class AprilTagVision extends SubsystemBase {
                 }
             }
 
-            
-
             // automatically managed, unnecessary
             // mat.release();
             // grayMat.release();
