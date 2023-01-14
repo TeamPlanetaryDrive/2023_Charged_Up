@@ -31,6 +31,7 @@ public class OI {
     
     // RobotMap.leftStickButton.whenHeld(new movement(LEFT_STICK_PRESS));
     // RobotMap.rightStickButton.whenHeld(new movement(RIGHT_STICK_PRESS));
+    RobotMap.rightStickButton.whileTrue(new ArcadeMovement());
     
     /*
     Goals for Xbox Controller Button Pressing Mapping

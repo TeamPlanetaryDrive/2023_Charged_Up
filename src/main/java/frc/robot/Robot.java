@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
 
   /**
    * This function is run when the robot is first started up and should be used
-   * for any initialization code.
+   * for any initialization code.42
    */
 
   public void robotInit() {

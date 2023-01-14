@@ -18,7 +18,7 @@ public class auto1 extends CommandBase {
 
     public void execute() {
         System.out.println("edcndo");
-        Robot.Drive.drive(-.7, -.7);
+        Robot.Drive.tankDrive(-.7, -.7);
         frameCount++;
     }
 
