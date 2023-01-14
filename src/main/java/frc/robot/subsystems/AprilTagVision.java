@@ -13,12 +13,15 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagDetection;
 import edu.wpi.first.apriltag.AprilTagDetector;
+import edu.wpi.first.apriltag.AprilTagPoseEstimator;
 import edu.wpi.first.apriltag.jni.AprilTagJNI;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.GenericPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -33,8 +36,15 @@ public class AprilTagVision extends SubsystemBase {
     public AprilTagDetector detector = new AprilTagDetector();
     public AprilTagDetector.Config config = new AprilTagDetector.Config();
 
+    // camera focal lens stuff, dont touch.
+    public double fx = 699.3778103158814, fy = 677.716, cx = 345.61, cy = 207.13;
+
+    // apriltag poseestimation, 0.1524 = 6in
+    public AprilTagPoseEstimator.Config poseEstConfig = new AprilTagPoseEstimator.Config(0.1524d, fx, fy, cx, cy);
+    public AprilTagPoseEstimator estimator = new AprilTagPoseEstimator(poseEstConfig);
     
-    public DoubleArrayPublisher aprilTagInfo;
+    
+    public GenericPublisher aprilTagInfo;
     private boolean debug = false;
 
     public AprilTagVision() {
@@ -42,7 +52,7 @@ public class AprilTagVision extends SubsystemBase {
 
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable table = inst.getTable("datatable");
-        aprilTagInfo = table.getDoubleArrayTopic("apriltags").publish();
+        aprilTagInfo = table.getTopic("apriltags").genericPublish(getName());
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         
@@ -56,6 +66,11 @@ public class AprilTagVision extends SubsystemBase {
         vThread.setDaemon(true);
         vThread.start();
     }
+
+    public String getName() {
+        return AprilTagDetection.class.getName();
+    }
+
 
     void tagDetection() {
         // setup camera & video
@@ -112,12 +127,11 @@ public class AprilTagVision extends SubsystemBase {
                     Imgproc.line(mat, new Point(cx, cy - ll), new Point(cx, cy + ll), xColor, 2);
                     Imgproc.putText(mat, Integer.toString(detection.getId()), new Point (cx + ll, cy), Imgproc.FONT_HERSHEY_SIMPLEX, 1, xColor, 3);
                     
-                    aprilTagInfo.set(new double[] {detection.getCenterX(), detection.getCenterY(), detection.getId()});
-                    // add pose estimation code here if you wanna
-                    // we don't really care about that stuff for this comp tho, 
-                    // we're just using ATs for helping align the bot
-                    // gonna preprogram movement for 15s autonomous
-    
+                    // aprilTagInfo.set(new double[] {detection.getCenterX(), detection.getCenterY(), detection.getId()});
+                    
+                    Transform3d pose = estimator.estimate(detection);
+                    aprilTagInfo.setValue(pose);
+                    
                 }
             }
 
