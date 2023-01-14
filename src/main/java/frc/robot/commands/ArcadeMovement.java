@@ -9,13 +9,13 @@ public class ArcadeMovement extends CommandBase {
 
     // set to 0 if not constant thrust - you want it to go faster when u push joystick further
     // otherwise, it will just use the constant as the thrust for everything.
-    public double thrustConstant = 0;
 
-    public XboxController driveStick;
+    // {thrust const, thrustX, thrustY}
+    public double[] thrustConstant = {0, 0, 0};
+    public XboxController controller;
 
     public ArcadeMovement() {
-        driveStick = RobotMap.XController;
-
+        controller = RobotMap.XController;
     }
 
     public void initialize() {
@@ -24,14 +24,27 @@ public class ArcadeMovement extends CommandBase {
     
     @Override
     public void execute() {
-        if (thrustConstant != 0) {
+        
+        if (thrustConstant[0] >= 0) {
+            thrustConstant[1] = thrustConstant[0];
+            thrustConstant[2] = thrustConstant[0];
+        } else if (thrustConstant[0] == 0) {
+            thrustConstant[1] = controller.getRightX();
+            thrustConstant[2] = controller.getRightY(); 
+        }
 
-            if(driveStick.getRightY() >=0) {
-                
+        if(controller.getRightY() >= 0) {
+            if(controller.getRightX() >= 0) {
+                Robot.Drive.arcadeDrive(thrustConstant[1], thrustConstant[2]);
+            } else {
+                Robot.Drive.arcadeDrive(-thrustConstant[1], thrustConstant[2]);
             }
-
-
-            Robot.Drive.arcadeDrive(thrustConstant, thrustConstant);
+        } else {
+            if(controller.getRightX() >= 0) {
+                Robot.Drive.arcadeDrive(thrustConstant[1], -thrustConstant[2]);
+            } else {
+                Robot.Drive.arcadeDrive(-thrustConstant[1], -thrustConstant[2]);
+            }
         }
     }
 

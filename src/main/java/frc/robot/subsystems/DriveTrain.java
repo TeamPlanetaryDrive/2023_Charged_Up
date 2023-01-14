@@ -47,6 +47,8 @@ public class DriveTrain extends SubsystemBase{
         robotDrive.tankDrive(left, right);
     }   
 
+
+    // unreverses the x and y vals
     public void arcadeDrive(double x, double y) {
         // robotDrive.arcadeDrive(-driveStick.getRightY(), driveStick.getRightX());
         robotDrive.arcadeDrive(-y, x);
