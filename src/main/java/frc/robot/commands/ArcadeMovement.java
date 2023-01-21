@@ -20,7 +20,7 @@ public class ArcadeMovement extends CommandBase {
 
     @Override
     public void initialize() {
-
+        // unused
     }
     
     @Override

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.opencv.core.Core;
@@ -35,7 +36,7 @@ public class AprilTagVision extends SubsystemBase {
     public CvSink cvSink;
     public AprilTagDetector detector = new AprilTagDetector();
     public AprilTagDetector.Config config = new AprilTagDetector.Config();
-
+    
     // camera focal lens stuff, dont touch.
     public double fx = 699.3778103158814, fy = 677.716, cx = 345.61, cy = 207.13;
 
@@ -50,6 +51,10 @@ public class AprilTagVision extends SubsystemBase {
     public AprilTagVision() {
         super();
 
+        config.quadDecimate = 0;
+        config.quadSigma = 2;
+        config.numThreads = 4;
+
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         NetworkTable table = inst.getTable("datatable");
         aprilTagInfo = table.getTopic("apriltags").genericPublish(getName());
@@ -59,8 +64,7 @@ public class AprilTagVision extends SubsystemBase {
         // apriltag stuff, see https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/apriltag/AprilTagDetector.html
         detector.addFamily("tag16h5");
         detector.setConfig(config);
-        // detector.addFamily("tag36h11"); not sure if it's use for this competition
-        
+
         // run on new thread
         Thread vThread = new Thread(() -> tagDetection());
         vThread.setDaemon(true);
@@ -71,6 +75,17 @@ public class AprilTagVision extends SubsystemBase {
         return AprilTagDetection.class.getName();
     }
 
+    private boolean isSquare(AprilTagDetection detection) {
+        double[] corners = detection.getCorners();
+        double width = Math.sqrt(Math.pow(corners[0] - corners[2], 2) + Math.pow(corners[1] - corners[3], 2));
+        double height = Math.sqrt(Math.pow(corners[2] - corners[4], 2) + Math.pow(corners[3] - corners[5], 2));
+        double aspectRatio = width / height;
+        double epsilon = 0.3;
+        if (Math.abs(aspectRatio - 1) < epsilon) {
+            return true;
+        }
+        return false;
+    }
 
     void tagDetection() {
         // setup camera & video
@@ -102,40 +117,44 @@ public class AprilTagVision extends SubsystemBase {
             // convert mat to grayscalle
             Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_BGR2GRAY);
 
-            AprilTagDetection[] detections = detector.detect(grayMat);
+            AprilTagDetection[] rawdetections = detector.detect(grayMat);
+            ArrayList<AprilTagDetection> detections = new ArrayList<AprilTagDetection>();
+            Collections.addAll(detections, rawdetections);
+
             tags.clear();
 
             // check if detected, otherwise do nothin
-            if (detections.length != 0) {
+            if (detections.size() != 0) {
+                
                 
                 for (AprilTagDetection detection : detections) {
-                    tags.add(detection.getId());
-                    if(debug) {System.out.println("found id " + detection.getId());}
+                    
+                    if(!(detection.getId() < 0 || detection.getId() > 8) && isSquare(detection)) {
                         
+                        tags.add(detection.getId());
                     
-                    for (var i = 0; i <= 3; i++) {
-                        var j = (i + 1) % 4;
-                        var pt1 = new Point(detection.getCornerX(i), detection.getCornerY(i));
-                        var pt2 = new Point(detection.getCornerX(j), detection.getCornerY(j));
-                        Imgproc.line(mat, pt1, pt2, outlineColor, 2);
+                        if(debug) {System.out.println("found id " + detection.getId());}
+                            
+                        
+                        for (var i = 0; i <= 3; i++) {
+                            var j = (i + 1) % 4;
+                            var pt1 = new Point(detection.getCornerX(i), detection.getCornerY(i));
+                            var pt2 = new Point(detection.getCornerX(j), detection.getCornerY(j));
+                            Imgproc.line(mat, pt1, pt2, outlineColor, 2);
+                        }
+        
+                        var cx = detection.getCenterX();
+                        var cy = detection.getCenterY();
+                        var ll = 10;
+                        Imgproc.line(mat, new Point(cx - ll, cy), new Point(cx + ll, cy), xColor, 2);
+                        Imgproc.line(mat, new Point(cx, cy - ll), new Point(cx, cy + ll), xColor, 2);
+                        Imgproc.putText(mat, Integer.toString(detection.getId()), new Point (cx + ll, cy), Imgproc.FONT_HERSHEY_SIMPLEX, 1, xColor, 3);
+                        
                     }
-    
-                    var cx = detection.getCenterX();
-                    var cy = detection.getCenterY();
-                    var ll = 10;
-                    Imgproc.line(mat, new Point(cx - ll, cy), new Point(cx + ll, cy), xColor, 2);
-                    Imgproc.line(mat, new Point(cx, cy - ll), new Point(cx, cy + ll), xColor, 2);
-                    Imgproc.putText(mat, Integer.toString(detection.getId()), new Point (cx + ll, cy), Imgproc.FONT_HERSHEY_SIMPLEX, 1, xColor, 3);
-                    
-                    // aprilTagInfo.set(new double[] {detection.getCenterX(), detection.getCenterY(), detection.getId()});
-                    
-                    Transform3d pose = estimator.estimate(detection);
-                    aprilTagInfo.setValue(pose);
-                    
+
                 }
             }
 
-            // automatically managed, unnecessary
             // mat.release();
             // grayMat.release();
 
