@@ -82,9 +82,8 @@ public class AprilTagVision extends SubsystemBase {
 
     private boolean isSquare(AprilTagDetection detection) {
         double[] corners = detection.getCorners();
-        double width = (Math.sqrt(Math.pow(corners[0] - corners[2], 2) + Math.pow(corners[1] - corners[3], 2)) + Math.sqrt(Math.pow(corners[6] - corners[4], 2) + Math.pow(corners[7] - corners[5], 2)))/2;
-        double height = (Math.sqrt(Math.pow(corners[2] - corners[4], 2) + Math.pow(corners[3] - corners[5], 2)) + Math.sqrt(Math.pow(corners[0] - corners[6], 2) + Math.pow(corners[1] - corners[7], 2)))/2;
-        if(width < 100.0 || height < 100.0) return false;
+        double width = Math.sqrt(Math.pow(corners[0] - corners[2], 2) + Math.pow(corners[1] - corners[3], 2));
+        double height = Math.sqrt(Math.pow(corners[2] - corners[4], 2) + Math.pow(corners[3] - corners[5], 2));
         double aspectRatio = width / height;
         double epsilon = 0.3;
         if (Math.abs(aspectRatio - 1) < epsilon) {
