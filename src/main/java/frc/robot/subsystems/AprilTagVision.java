@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -36,19 +38,21 @@ public class AprilTagVision extends SubsystemBase {
     public CvSink cvSink;
     public AprilTagDetector detector = new AprilTagDetector();
     public AprilTagDetector.Config config = new AprilTagDetector.Config();
-    
+    //clear counter goes up until it hits the threshold, then everything in the thread is removed
+    private int clearCounter = 0;
+    private int clearThreshold = 10000;
     // camera focal lens stuff, dont touch.
     public double fx = 699.3778103158814, fy = 677.716, cx = 345.61, cy = 207.13;
 
     // apriltag poseestimation, 0.1524 = 6in
     public AprilTagPoseEstimator.Config poseEstConfig = new AprilTagPoseEstimator.Config(0.1524d, fx, fy, cx, cy);
     public AprilTagPoseEstimator estimator = new AprilTagPoseEstimator(poseEstConfig);
-    
+   
     
     public GenericPublisher aprilTagInfo;
     private boolean debug = false;
 
-    public AprilTagVision() {
+    public AprilTagVision(){
         super();
 
         config.quadDecimate = 0;
@@ -64,11 +68,12 @@ public class AprilTagVision extends SubsystemBase {
         // apriltag stuff, see https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/apriltag/AprilTagDetector.html
         detector.addFamily("tag16h5");
         detector.setConfig(config);
-
         // run on new thread
         Thread vThread = new Thread(() -> tagDetection());
         vThread.setDaemon(true);
         vThread.start();
+
+       
     }
 
     public String getName() {
@@ -77,8 +82,9 @@ public class AprilTagVision extends SubsystemBase {
 
     private boolean isSquare(AprilTagDetection detection) {
         double[] corners = detection.getCorners();
-        double width = Math.sqrt(Math.pow(corners[0] - corners[2], 2) + Math.pow(corners[1] - corners[3], 2));
-        double height = Math.sqrt(Math.pow(corners[2] - corners[4], 2) + Math.pow(corners[3] - corners[5], 2));
+        double width = (Math.sqrt(Math.pow(corners[0] - corners[2], 2) + Math.pow(corners[1] - corners[3], 2)) + Math.sqrt(Math.pow(corners[6] - corners[4], 2) + Math.pow(corners[7] - corners[5], 2)))/2;
+        double height = (Math.sqrt(Math.pow(corners[2] - corners[4], 2) + Math.pow(corners[3] - corners[5], 2)) + Math.sqrt(Math.pow(corners[0] - corners[6], 2) + Math.pow(corners[1] - corners[7], 2)))/2;
+        if(width < 100.0 || height < 100.0) return false;
         double aspectRatio = width / height;
         double epsilon = 0.3;
         if (Math.abs(aspectRatio - 1) < epsilon) {
@@ -88,6 +94,7 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     void tagDetection() {
+        
         // setup camera & video
         UsbCamera camera = CameraServer.startAutomaticCapture();
         camera.setResolution(RobotMap.CAM_WID, RobotMap.CAM_HEI);
@@ -99,7 +106,6 @@ public class AprilTagVision extends SubsystemBase {
         Mat mat = new Mat();
         Mat grayMat = new Mat();
         ArrayList<Integer> tags = new ArrayList<>();
-
         // colors for video
         Scalar outlineColor = new Scalar(0, 255, 0); // green
         Scalar xColor = new Scalar(0, 0, 255); // blue
@@ -113,22 +119,31 @@ public class AprilTagVision extends SubsystemBase {
                 video.notifyError(cvSink.getError());
                 continue;
             }    
-
+           
             // convert mat to grayscalle
             Imgproc.cvtColor(mat, grayMat, Imgproc.COLOR_BGR2GRAY);
 
             AprilTagDetection[] rawdetections = detector.detect(grayMat);
             ArrayList<AprilTagDetection> detections = new ArrayList<AprilTagDetection>();
             Collections.addAll(detections, rawdetections);
-
-            tags.clear();
-
+           
+            clearCounter++;
+            if(clearCounter >= clearThreshold)
+            {
+                tags.clear();
+            }
+                
+           if(Collections.frequency(tags, 1) > 10) 
+           {
+                System.out.print("red community 1");
+                tags.clear();
+           }
             // check if detected, otherwise do nothin
             if (detections.size() != 0) {
                 
                 
                 for (AprilTagDetection detection : detections) {
-                    
+                    //kept at zero to make sure it's able to detect non frc apriltags
                     if(!(detection.getId() < 0 || detection.getId() > 8) && isSquare(detection)) {
                         
                         tags.add(detection.getId());
