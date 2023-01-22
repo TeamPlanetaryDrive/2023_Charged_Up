@@ -6,6 +6,12 @@
   },
   "NetworkTables": {
     "transitory": {
+      "CameraPublisher": {
+        "April Tag Detection": {
+          "open": true
+        },
+        "open": true
+      },
       "LiveWindow": {
         ".status": {
           "open": true
