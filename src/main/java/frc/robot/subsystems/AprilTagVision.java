@@ -22,6 +22,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.GenericPublisher;
@@ -38,9 +39,11 @@ public class AprilTagVision extends SubsystemBase {
     public CvSink cvSink;
     public AprilTagDetector detector = new AprilTagDetector();
     public AprilTagDetector.Config config = new AprilTagDetector.Config();
+    
     //clear counter goes up until it hits the threshold, then everything in the thread is removed
     private int clearCounter = 0;
     private int clearThreshold = 10000;
+    
     // camera focal lens stuff, dont touch.
     public double fx = 699.3778103158814, fy = 677.716, cx = 345.61, cy = 207.13;
 
@@ -56,7 +59,7 @@ public class AprilTagVision extends SubsystemBase {
         super();
 
         config.quadDecimate = 0;
-        config.quadSigma = 2;
+        config.quadSigma = 5;
         config.numThreads = 4;
 
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
@@ -68,6 +71,7 @@ public class AprilTagVision extends SubsystemBase {
         // apriltag stuff, see https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/apriltag/AprilTagDetector.html
         detector.addFamily("tag16h5");
         detector.setConfig(config);
+        
         // run on new thread
         Thread vThread = new Thread(() -> tagDetection());
         vThread.setDaemon(true);
@@ -85,7 +89,7 @@ public class AprilTagVision extends SubsystemBase {
         double width = Math.sqrt(Math.pow(corners[0] - corners[2], 2) + Math.pow(corners[1] - corners[3], 2));
         double height = Math.sqrt(Math.pow(corners[2] - corners[4], 2) + Math.pow(corners[3] - corners[5], 2));
         double aspectRatio = width / height;
-        double epsilon = 0.3;
+        double epsilon = 0.25;
         if (Math.abs(aspectRatio - 1) < epsilon) {
             return true;
         }
@@ -105,6 +109,7 @@ public class AprilTagVision extends SubsystemBase {
         Mat mat = new Mat();
         Mat grayMat = new Mat();
         ArrayList<Integer> tags = new ArrayList<>();
+
         // colors for video
         Scalar outlineColor = new Scalar(0, 255, 0); // green
         Scalar xColor = new Scalar(0, 0, 255); // blue
@@ -163,14 +168,23 @@ public class AprilTagVision extends SubsystemBase {
                         Imgproc.line(mat, new Point(cx - ll, cy), new Point(cx + ll, cy), xColor, 2);
                         Imgproc.line(mat, new Point(cx, cy - ll), new Point(cx, cy + ll), xColor, 2);
                         Imgproc.putText(mat, Integer.toString(detection.getId()), new Point (cx + ll, cy), Imgproc.FONT_HERSHEY_SIMPLEX, 1, xColor, 3);
+                        Transform3d pose = estimator.estimate(detection);
                         
+                        Quaternion quaternion = pose.getRotation().getQuaternion();
+
+                        double length = 100;
+                        double x = 2 * (quaternion.getX() * quaternion.getZ() - quaternion.getW() * quaternion.getY());
+                        double y = 2 * (quaternion.getY() * quaternion.getZ() + quaternion.getW() * quaternion.getX());
+                        double z = 1 - 2 * (quaternion.getX() * quaternion.getX() + quaternion.getY() * quaternion.getY());
+                        Point end = new Point(cx + x * length, cy + y * length);
+
+                        // Draw the line on the image
+                        Imgproc.arrowedLine(mat, new Point(cx, cy), end, new Scalar(255, 0, 0), 2);
+                        // System.out.println("[DEBUG] Tag Detected: " + pose);
                     }
 
                 }
             }
-
-            // mat.release();
-            // grayMat.release();
 
             SmartDashboard.putString("tag", tags.toString());
             video.putFrame(mat);
