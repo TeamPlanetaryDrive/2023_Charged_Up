@@ -5,7 +5,15 @@
     }
   },
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "transitory": {
+      "CameraPublisher": {
+        "April Tag Detection": {
+          "open": true
+        }
+      },
       "LiveWindow": {
         ".status": {
           "open": true

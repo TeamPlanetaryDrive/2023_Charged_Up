@@ -2,9 +2,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class TestCommand extends CommandBase {
+public class testCommand extends CommandBase {
 
-    public TestCommand() {
+    public testCommand() {
 
     }
 
