@@ -12,12 +12,8 @@
       "CameraPublisher": {
         "April Tag Detection": {
           "open": true
-<<<<<<< HEAD
         },
         "open": true
-=======
-        }
->>>>>>> 58955596fcfd84efd0a459208c873192f41df7bc
       },
       "LiveWindow": {
         ".status": {
