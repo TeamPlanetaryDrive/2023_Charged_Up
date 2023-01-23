@@ -222,7 +222,7 @@ public class AprilTagVision extends SubsystemBase {
 
                         // Draw the line on the image
                         Imgproc.arrowedLine(mat, new Point(cx, cy), end, new Scalar(255, 0, 0), 2);
-                        System.out.println("[DEBUG] Tag Detected: " + pose);
+                        //System.out.println("[DEBUG] Tag Detected: " + pose);
 
 
                         MatOfPoint matOfPoint = new MatOfPoint();
