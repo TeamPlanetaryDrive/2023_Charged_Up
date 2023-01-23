@@ -180,7 +180,7 @@ public class AprilTagVision extends SubsystemBase {
                 for (AprilTagDetection detection : detections) {
 
                     //kept at zero to make sure it's able to detect non frc apriltags
-                    if(!(detection.getId() < 0 || detection.getId() > 8) && isSquare(detection) && detection.getHamming() < 2) {
+                    if(!(detection.getId() < 0 || detection.getId() > 8) && isSquare(detection) && detection.getHamming() < 1) {
                         
                         tags.add(detection.getId());
                     
